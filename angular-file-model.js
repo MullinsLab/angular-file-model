@@ -24,6 +24,11 @@
 // Note that one-way binding in this context means the file input element
 // updates the model variables but not vice versa.
 //
+// Instead of using an assignable model variable, you may also provide a
+// non-assignable expression which will be called with a "file", "name", or
+// "data" variable in scope.  A similar effect can be accomplished by passing
+// an assignable object property which has a defined setter method.
+//
 // Also note that multiple files are not supported at this time, although both
 // file inputs and drag-and-drop events support FileList objects.
 //
@@ -111,15 +116,26 @@
   }
 
 
+  function generateSetter(expr, valueName) {
+    if (expr)
+      if (expr.assign)
+        return expr.assign;
+      else
+        return (scope, value) => { expr(scope, { [valueName]: value }) };
+    else
+      return null;
+  }
+
+
   function generateUpdater(directiveName, attrs, $parse, $log) {
     var directiveAttr   = attrs.$normalize(directiveName);
-    var fileModel       = $parse(attrs[directiveAttr]);
-    var nameModel       = $parse(attrs.fileName);
-    var dataModel       = $parse(attrs.fileData);
+    var fileModel       = attrs[directiveAttr] ? $parse(attrs[directiveAttr]) : null;
+    var nameModel       = attrs.fileName       ? $parse(attrs.fileName)       : null;
+    var dataModel       = attrs.fileData       ? $parse(attrs.fileData)       : null;
     var dataAs          = attrs.fileDataAs || "DataURL";
-    var fileModelSetter = fileModel.assign;
-    var nameModelSetter = nameModel.assign;
-    var dataModelSetter = dataModel.assign;
+    var fileModelSetter = generateSetter(fileModel, "file");
+    var nameModelSetter = generateSetter(nameModel, "name");
+    var dataModelSetter = generateSetter(dataModel, "data");
 
     if (!fileModelSetter && !nameModelSetter && !dataModelSetter) {
       $log.error("<input " + directiveName + "> without binding a model to any supported attribute is useless; ignoring this element");
