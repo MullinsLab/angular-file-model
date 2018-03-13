@@ -95,8 +95,9 @@
         });
 
         // Remove dropzone highlight
-        element.bind("dragend", (ev) => {
-          element[0].classList.remove("file-drop-hover");
+        element.bind("dragleave", (ev) => {
+          if (ev.target === element[0])
+            element[0].classList.remove("file-drop-hover");
         });
 
         // Handle drop
