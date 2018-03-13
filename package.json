@@ -1,0 +1,14 @@
+{
+  "name": "angular-file-model",
+  "version": "1.0.0",
+  "description": "A bridge between File objects and your AngularJS components",
+  "main": "angular-file-model.js",
+  "repository": "https://github.com/MullinsLab/angular-file-model",
+  "author": "Thomas Sibley <trsibley@uw.edu>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {},
+  "optionalDependencies": {
+    "angular": "^1.5.8"
+  }
+}
