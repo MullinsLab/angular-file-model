@@ -57,20 +57,27 @@
         element.bind("dragover", (ev) => { ev.preventDefault() });
 
         // Highlight the dropzone
-        element.bind("dragenter", () => {
-          element[0].classList.add("file-drop-hover");
+        element.bind("dragenter", (ev) => {
+          ev.currentTarget.classList.add("file-drop-hover");
         });
 
-        // Remove dropzone highlight
+        // Remove dropzone highlight when we leave the dropzone for good.  If
+        // we're leaving a child element or leaving the dropzone but entering a
+        // child element, then we're not actually leaving in the sense we care
+        // about.
         element.bind("dragleave", (ev) => {
-          if (ev.target === element[0])
-            element[0].classList.remove("file-drop-hover");
+          let leaving  = ev.target,
+              entering = ev.relatedTarget,
+              dropzone = ev.currentTarget;
+
+          if (leaving === dropzone && !dropzone.contains(entering))
+            dropzone.classList.remove("file-drop-hover");
         });
 
         // Handle drop
         element.bind("drop", (ev) => {
           ev.preventDefault();
-          element[0].classList.remove("file-drop-hover");
+          ev.currentTarget.classList.remove("file-drop-hover");
           update(elementScope, ev.dataTransfer.files);
         });
       }
